@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <apikit:config name="delivery-champ-banking-core-papi-config" api="resource::99356d42-b7a7-4d0a-bc83-7b7ade7b5722:delivery-champ-banking-core-papi:1.0.1:oas:zip:delivery-champ-banking-core-papi.yaml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="delivery-champ-banking-core-papi-main">
+        <http:listener path="/api/*" config-ref="delivery-champ-banking-core1-papi-http-listener-config">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="delivery-champ-banking-core-papi-config" />
+        <error-handler ref="global-exception-handler-apikit-errors" />
+    </flow>
+    <flow name="post:\accountList:application\json:delivery-champ-banking-core-papi-config">
+        <flow-ref doc:name="post-accountList-main-flow" doc:id="aa791c18-f8ae-4ed5-b578-849e87a49afc" name="post-accountList-main-flow" />
+        <error-handler ref="global-exception-handler-all-errors" />
+    </flow>
+    <flow name="post:\consumerIdentify:application\json:delivery-champ-banking-core-papi-config">
+        <flow-ref doc:name="post-consumerIdentify-main-flow" doc:id="085060a1-a0d8-4933-8163-18424e4f8577" name="post-consumerIdentify-main-flow" />
+        <error-handler ref="global-exception-handler-all-errors" />
+    </flow>
+    <flow name="post:\credit:application\json:delivery-champ-banking-core-papi-config">
+        <flow-ref doc:name="post-credit-main-flow" doc:id="f2e9e203-fd85-449b-a767-e034810becf8" name="post-credit-main-flow" />
+        <error-handler ref="global-exception-handler-all-errors" />
+    </flow>
+    <flow name="post:\debit:application\json:delivery-champ-banking-core-papi-config">
+        <flow-ref doc:name="post-debit-main-flow" doc:id="a86c6b72-de30-4830-bd48-13f68beb41b1" name="post-debit-main-flow" />
+        <error-handler ref="global-exception-handler-all-errors" />
+    </flow>
+</mule>
